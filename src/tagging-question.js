@@ -25,26 +25,26 @@ export class TaggingQuestion extends DDD {
     return html`
       <confetti-container id="confetti">
         <div class="tagging-container">
-          <div class="add-user-container">
-            <p><span>Add User:</span></p>
-            <input type="text" class="text-input" .value=${this.userInput} @input="${this.handleInput}">
-            <button id="close-button" @click="${this.confirmClose}">✕</button>        
-            <button id="add-button" ?disabled="${this.userInput === ''}" @click="${this.addUser}">►</button>
-          </div>
-          <div class="current-user-container">
-            <p><span>Current Users:</span></p>        
-            <div class="scroll-container">
-              ${this.users.map(user => html`
-                <div class="card-container">
-                  <button @click="${() => this.deleteUser(user)}">
-                    <rpg-character hat="random" seed="${user}"></rpg-character>
-                    <p>${user}</p>
-                  </button>
+              <div class="add-user-container">
+                <p><span>Add User:</span></p>
+                <input type="text" class="text-input" .value=${this.userInput} @input="${this.handleInput}">
+                <button id="close-button" @click="${this.confirmClose}">✕</button>        
+                <button id="add-button" ?disabled="${this.userInput === ''}" @click="${this.addUser}">►</button>
+              </div>
+              <div class="current-user-container">
+                <p><span>Current Users:</span></p>        
+                <div class="scroll-container">
+                  ${this.users.map(user => html`
+                    <div class="card-container">
+                      <button @click="${() => this.deleteUser(user)}">
+                        <rpg-character hat="random" seed="${user}"></rpg-character>
+                        <p>${user}</p>
+                      </button>
+                    </div>
+                  `)}       
                 </div>
-              `)}       
-            </div>
-          </div>
-          <button id="save-button" @click="${this.saveParty}">Save Party</button>
+              </div>
+              <button id="save-button" @click="${this.saveParty}">Save Party</button>
         </div>
       </confetti-container>
     `;
