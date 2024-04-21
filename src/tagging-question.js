@@ -36,7 +36,7 @@ export class TaggingQuestion extends DDD {
           transition: height 0.3s ease;
         }
 
-        .tag-container:ac {
+        .tag-container.submitted {
           max-height: 1000px;
         }
 
