@@ -69,6 +69,7 @@ export class TaggingQuestion extends DDD {
         .submission-container {
           display: flex;
           height: auto;
+          overflow-y: auto;
           background-color: #f0f0f0;
           padding: 10px;
           border: 2px solid #ccc;
@@ -79,6 +80,8 @@ export class TaggingQuestion extends DDD {
 
         .user-choice-container {
           display: inline-flex;
+          flex-wrap: wrap;
+          overflow-y: auto;
           width: 100%;
           gap: 10px;
         }
@@ -87,17 +90,33 @@ export class TaggingQuestion extends DDD {
           display: inline-flex;
           position: relative;
           right: 0;
-          padding: 10px 20px;
+          padding: 15px 20px;
           background-color: #007bff;
           color: #fff;
           border: none;
-          border-radius: 4px;
+          border-radius: 8px;
           cursor: pointer;
           transition: background-color 0.3s ease;
         }
 
         #submit-button:hover {
-          background-color: #0056b3;
+          background-color: #0066d4;
+        }
+
+        #reset-button {
+          display: block; /* Change display to block */
+          margin-top: 10px; /* Add margin to separate the buttons */
+          padding: 15px 20px; /* Adjusted padding for the button */
+          background-color: #dc3545; /* Red color for reset button */
+          color: #fff; /* White text color */
+          border: none; /* No border */
+          border-radius: 8px; /* Rounded corners */
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+
+        #reset-button:hover {
+          background-color: #c82333; /* Darker red color on hover */
         }
 
         .option-container {
@@ -150,6 +169,7 @@ export class TaggingQuestion extends DDD {
                 `)}
               </div>
               <button id="submit-button" @click="${this.submitAnswers}">Submit</button>
+              <button id="reset-button" @click="${this.resetTags}">Reset</button>
             </div>
             <div class="option-container" @dragover="${this.allowDrop}">
               ${this.tagOptions.map(tagOption => html`
@@ -176,7 +196,6 @@ export class TaggingQuestion extends DDD {
           this.tagOptions = tagSet.tagOptions || [];
           this.tagAnswers = tagSet.tagAnswers || [];
           
-          // Shuffle the tagOptions array
           this.tagOptions = this.shuffleArray(this.tagOptions);
         } else {
           throw new Error(`tagSet '${this.answerSet}' not found`);
@@ -228,7 +247,13 @@ export class TaggingQuestion extends DDD {
     if (isUserChoice) {
       this.addTag(tagOption);
     } else {
-      this.removeTag(tagOption);
+      // Check if the tag is not already inside the user-choice container
+      if (!this.selectedTags.includes(tagOption)) {
+        // Check if the tag is not already inside the option container
+        if (!this.tagOptions.includes(tagOption)) {
+          this.tagOptions.push(tagOption);
+        }
+      }
     }
   }
   
@@ -267,7 +292,7 @@ export class TaggingQuestion extends DDD {
   }
   
   addTag(tagOption) {
-    if (!this.submitted) {
+    if (!this.submitted && !this.selectedTags.includes(tagOption)) {
       this.selectedTags = [...this.selectedTags, tagOption];
       this.tagOptions = this.tagOptions.filter(tag => tag !== tagOption);
     }
@@ -284,6 +309,13 @@ export class TaggingQuestion extends DDD {
     this.submitted = true;
     this.applyFeedback();
     this.makeItRain();
+  }
+
+  resetTags() {
+    if (!this.submitted) {
+      this.selectedTags = []; // Clear selected tags
+      this.tagOptions = this.shuffleArray([...this.tagOptions, ...this.selectedTags]); // Reset tag options
+    }
   }
 
   makeItRain() {
