@@ -86,12 +86,11 @@ export class TaggingQuestion extends DDD {
           gap: 10px;
         }
 
-        #submit-button {
+        #submit-button, #reset-button {
           display: inline-flex;
           position: relative;
           right: 0;
           padding: 15px 20px;
-          background-color: #007bff;
           color: #fff;
           border: none;
           border-radius: 8px;
@@ -99,20 +98,17 @@ export class TaggingQuestion extends DDD {
           transition: background-color 0.3s ease;
         }
 
-        #submit-button:hover {
-          background-color: #0066d4;
+        #submit-button {
+          background-color: #007bff;
         }
 
         #reset-button {
-          display: block; 
           margin-top: 10px;
-          padding: 15px 20px;
-          background-color: #dc3545;
-          color: #fff;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
+          background-color: #e92539;
+        }
+
+        #submit-button:hover {
+          background-color: #005fc4;
         }
 
         #reset-button:hover {
@@ -169,7 +165,7 @@ export class TaggingQuestion extends DDD {
                 `)}
               </div>
               <button id="submit-button" @click="${this.submitAnswers}">Submit</button>
-              <button id="reset-button" @click="${this.resetTags}">Reset</button>
+              <button id="reset-button" @click="${this.reset}">Reset</button>
             </div>
             <div class="option-container" @dragover="${this.allowDrop}">
               ${this.tagOptions.map(tagOption => html`
@@ -309,12 +305,12 @@ export class TaggingQuestion extends DDD {
     this.makeItRain();
   }
 
-  resetTags() {
-    if (!this.submitted) {
-      this.selectedTags = [];
-      this.tagOptions = this.shuffleArray([...this.tagOptions, ...this.selectedTags]);
-    }
+  reset() {
+    this.submitted = false;
+    this.tagOptions = [...this.tagOptions, ...this.selectedTags];
+    this.selectedTags = [];
   }
+  
 
   makeItRain() {
     import('@lrnwebcomponents/multiple-choice/lib/confetti-container.js').then((module) => {
