@@ -66,9 +66,11 @@ export class TaggingQuestion extends DDD {
           box-sizing: border-box;
         }
 
-        .submission-container {
+        .user-choice-container {
           display: flex;
-          height: auto;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 10px;
           overflow-y: auto;
           background-color: #f0f0f0;
           padding: 10px;
@@ -78,18 +80,7 @@ export class TaggingQuestion extends DDD {
           margin-bottom: 20px;
         }
 
-        .user-choice-container {
-          display: inline-flex;
-          flex-wrap: wrap;
-          overflow-y: auto;
-          width: 100%;
-          gap: 10px;
-        }
-
         #submit-button, #reset-button {
-          display: inline-flex;
-          position: relative;
-          right: 0;
           padding: 15px 20px;
           color: #fff;
           border: none;
@@ -113,6 +104,13 @@ export class TaggingQuestion extends DDD {
 
         #reset-button:hover {
           background-color: #c82333;
+        }
+
+        #submit-button:disabled {
+          pointer-events: none;
+          opacity: 0.5;
+          cursor: not-allowed;
+          background-color: #ccc;
         }
 
         .option-container {
@@ -143,6 +141,8 @@ export class TaggingQuestion extends DDD {
         .tag-option.incorrect {
           outline: 2px solid #f44336;
         }
+
+        
       `
     ];
   }
@@ -158,20 +158,20 @@ export class TaggingQuestion extends DDD {
             <p><span>${this.question}</span></p>
           </div>
           <div class="tag-option-container">
-            <div class="submission-container">
-              <div class="user-choice-container" @drop="${this.handleDropInAnswer}" @dragover="${this.allowDrop}">
-                ${this.selectedTags.map(tag => html`
-                  <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}">${tag}</div>
-                `)}
-              </div>
-              <button id="submit-button" @click="${this.submitAnswers}">Submit</button>
-              <button id="reset-button" @click="${this.reset}">Reset</button>
+            <div class="user-choice-container" @drop="${this.handleDropInAnswer}" @dragover="${this.allowDrop}">
+              ${this.selectedTags.map(tag => html`
+                <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}">${tag}</div>
+              `)}
             </div>
             <div class="option-container" @dragover="${this.allowDrop}">
               ${this.tagOptions.map(tagOption => html`
                 <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" >${tagOption}</div>
               `)}
             </div>
+          </div>
+          <div>
+            <button id="submit-button" ?disabled="${this.submitted}" @click="${this.submitAnswers}">Submit</button>
+            <button id="reset-button" @click="${this.reset}">Reset</button>
           </div>
         </div>
       </confetti-container>
@@ -309,6 +309,7 @@ export class TaggingQuestion extends DDD {
     this.submitted = false;
     this.tagOptions = [...this.tagOptions, ...this.selectedTags];
     this.selectedTags = [];
+    this.shuffleArray(this.tagOptions); 
   }
   
 
