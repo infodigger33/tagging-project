@@ -104,19 +104,19 @@ export class TaggingQuestion extends DDD {
         }
 
         #reset-button {
-          display: block; /* Change display to block */
-          margin-top: 10px; /* Add margin to separate the buttons */
-          padding: 15px 20px; /* Adjusted padding for the button */
-          background-color: #dc3545; /* Red color for reset button */
-          color: #fff; /* White text color */
-          border: none; /* No border */
-          border-radius: 8px; /* Rounded corners */
+          display: block; 
+          margin-top: 10px;
+          padding: 15px 20px;
+          background-color: #dc3545;
+          color: #fff;
+          border: none;
+          border-radius: 8px;
           cursor: pointer;
           transition: background-color 0.3s ease;
         }
 
         #reset-button:hover {
-          background-color: #c82333; /* Darker red color on hover */
+          background-color: #c82333;
         }
 
         .option-container {
@@ -247,9 +247,7 @@ export class TaggingQuestion extends DDD {
     if (isUserChoice) {
       this.addTag(tagOption);
     } else {
-      // Check if the tag is not already inside the user-choice container
       if (!this.selectedTags.includes(tagOption)) {
-        // Check if the tag is not already inside the option container
         if (!this.tagOptions.includes(tagOption)) {
           this.tagOptions.push(tagOption);
         }
@@ -313,8 +311,8 @@ export class TaggingQuestion extends DDD {
 
   resetTags() {
     if (!this.submitted) {
-      this.selectedTags = []; // Clear selected tags
-      this.tagOptions = this.shuffleArray([...this.tagOptions, ...this.selectedTags]); // Reset tag options
+      this.selectedTags = [];
+      this.tagOptions = this.shuffleArray([...this.tagOptions, ...this.selectedTags]);
     }
   }
 
