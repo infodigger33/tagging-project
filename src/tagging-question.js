@@ -12,7 +12,7 @@ export class TaggingQuestion extends DDD {
     this.question = "question";
     this.answerSet = "default";
     this.tagOptions = [];
-    this.tagAnswers = [];
+    this.selectedTags = [];
     this.submitted = false;
     this.loadTagsData();
   }
@@ -30,6 +30,7 @@ export class TaggingQuestion extends DDD {
           border: 2px solid #ccc;
           border-radius: 8px;
           padding: 20px;
+          height: auto;
           max-width: 600px;
           margin: auto;
           overflow: hidden; 
@@ -79,6 +80,7 @@ export class TaggingQuestion extends DDD {
         .user-choice-container {
           display: inline-flex;
           width: 100%;
+          gap: 10px;
         }
 
         #submit-button {
@@ -119,24 +121,12 @@ export class TaggingQuestion extends DDD {
           background-color: #e0e0e0;
         }
 
-        .tag-option.selected {
-          background-color: #a0d4ff;
-        }
-
         .tag-option.correct {
           outline: 2px solid #4caf50;
         }
 
         .tag-option.incorrect {
           outline: 2px solid #f44336;
-        }
-
-        .result-item {
-          margin-top: 10px;
-        }
-
-        .result-feedback {
-          font-style: italic;
         }
       `
     ];
@@ -145,9 +135,7 @@ export class TaggingQuestion extends DDD {
   render() {
     return html`
       <confetti-container id="confetti">
-        <div
-          class="tag-container ${this.submitted ? "submitted" : ""}"
-        >
+        <div class="tag-container ${this.submitted ? "submitted" : ""}">
           <div class="image-container">
             <img class="image" src="${this.image}">
           </div>
@@ -156,14 +144,16 @@ export class TaggingQuestion extends DDD {
           </div>
           <div class="tag-option-container">
             <div class="submission-container">
-              <div class="user-choice-container">
-                <!-- ${this.tagAnswers.map(tagAnswer => html``)} -->
+              <div class="user-choice-container" @drop="${this.handleDropInAnswer}" @dragover="${this.allowDrop}">
+                ${this.selectedTags.map(tag => html`
+                  <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}">${tag}</div>
+                `)}
               </div>
               <button id="submit-button" @click="${this.submitAnswers}">Submit</button>
             </div>
-            <div class="option-container">
+            <div class="option-container" @dragover="${this.allowDrop}">
               ${this.tagOptions.map(tagOption => html`
-                <div class="tag-option" draggable="true" @click="${() => this.selectTagOption(tagOption)}">${tagOption}</div>
+                <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" >${tagOption}</div>
               `)}
             </div>
           </div>
@@ -185,6 +175,9 @@ export class TaggingQuestion extends DDD {
         if (tagSet) {
           this.tagOptions = tagSet.tagOptions || [];
           this.tagAnswers = tagSet.tagAnswers || [];
+          
+          // Shuffle the tagOptions array
+          this.tagOptions = this.shuffleArray(this.tagOptions);
         } else {
           throw new Error(`tagSet '${this.answerSet}' not found`);
         }
@@ -193,9 +186,103 @@ export class TaggingQuestion extends DDD {
         console.error("Error loading tags data: ", error);
       });
   }
+  
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  firstUpdated() {
+    super.firstUpdated();
+    this.answerContainer = this.shadowRoot.querySelector(".user-choice-container");
+    this.optionContainer = this.shadowRoot.querySelector(".option-container");
+    this.answerContainer.addEventListener("dragover", this.allowDrop.bind(this));
+    this.optionContainer.addEventListener("dragover", this.allowDrop.bind(this));
+    this.answerContainer.addEventListener("drop", this.handleDrop.bind(this, true));
+    this.optionContainer.addEventListener("drop", this.handleDrop.bind(this, false));
+  }
+
+  handleDragStart(e) {
+    const tagOption = e.target.textContent.trim();
+    e.dataTransfer.setData("text/plain", tagOption);
+  }
+
+  handleDragEnd(e) {
+    const tagOption = e.target.textContent.trim();
+    const sourceContainer = e.target.closest(".user-choice-container");
+    if (sourceContainer) {
+      this.removeTag(tagOption);
+    }
+  }
+
+  allowDrop(e) {
+    e.preventDefault();
+  }
+
+  handleDrop(isUserChoice, e) {
+    e.preventDefault();
+    const tagOption = e.dataTransfer.getData("text/plain");
+    if (isUserChoice) {
+      this.addTag(tagOption);
+    } else {
+      this.removeTag(tagOption);
+    }
+  }
+  
+  applyFeedback() {
+    if (this.submitted) {
+      fetch("./src/tags.json")
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch tags data");
+          }
+          return response.json();
+        })
+        .then(tagsData => {
+          const tagSet = tagsData[this.answerSet];
+          if (tagSet) {
+            const tagAnswers = tagSet.tagAnswers || [];
+            const selectedTags = this.selectedTags;
+            const tagElements = Array.from(this.shadowRoot.querySelectorAll('.tag-option'));
+            tagElements.forEach(tagElement => {
+              const optionText = tagElement.textContent.trim();
+              const tagAnswer = tagAnswers.find(answer => answer.hasOwnProperty(optionText));
+              if (tagAnswer) {
+                const correct = tagAnswer[optionText].correct;
+                tagElement.classList.toggle('correct', correct && selectedTags.includes(optionText));
+                tagElement.classList.toggle('incorrect', !correct && selectedTags.includes(optionText));
+              }
+            });
+          } else {
+            throw new Error(`tagSet '${this.answerSet}' not found`);
+          }
+        })
+        .catch(error => {
+          console.error("Error applying feedback: ", error);
+        });
+    }
+  }
+  
+  addTag(tagOption) {
+    if (!this.submitted) {
+      this.selectedTags = [...this.selectedTags, tagOption];
+      this.tagOptions = this.tagOptions.filter(tag => tag !== tagOption);
+    }
+  }
+
+  removeTag(tagOption) {
+    if (!this.submitted) {
+      this.selectedTags = this.selectedTags.filter(tag => tag !== tagOption);
+      this.tagOptions.push(tagOption);
+    }
+  }
 
   submitAnswers() {
-    this.submitted = !this.submitted;
+    this.submitted = true;
+    this.applyFeedback();
     this.makeItRain();
   }
 
@@ -214,7 +301,7 @@ export class TaggingQuestion extends DDD {
       question: { type: String, reflect: true },
       answerSet: { type: String, reflect: true },
       tagOptions: { type: Array, attribute: "tag-options" },
-      tagAnswers: { type: Array, attribute: "tag-answers" },
+      selectedTags: { type: Array, attribute: "selected-tags" },
       submitted: { type: Boolean, reflect: true }
     };
   }
