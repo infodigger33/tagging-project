@@ -12,6 +12,9 @@ export class TaggingQuestion extends DDD {
     this.question = "question";
     this.answerSet = "default";
     this.tagOptions = [];
+    this.allTags = [];
+    this.tagCorrect = [];
+    this.tagFeedback = [];
     this.selectedTags = [];
     this.submitted = false;
     this.loadTagsData();
@@ -26,7 +29,6 @@ export class TaggingQuestion extends DDD {
           display: flex;
           flex-direction: column;
           align-items: center;
-          justify-content: center;
           border: 2px solid #ccc;
           border-radius: 8px;
           padding: 20px;
@@ -35,10 +37,6 @@ export class TaggingQuestion extends DDD {
           margin: auto;
           overflow: hidden; 
           transition: height 0.3s ease;
-        }
-
-        .tag-container.submitted {
-          max-height: 1000px;
         }
 
         .image-container {
@@ -80,37 +78,20 @@ export class TaggingQuestion extends DDD {
           margin-bottom: 20px;
         }
 
+        .user-choice-container p {
+          font-size: 18px;
+          margin: 11px;
+          color: #939393
+        }
+
         #submit-button, #reset-button {
+          margin-top: 20px;
           padding: 15px 20px;
           color: #fff;
           border: none;
           border-radius: 8px;
           cursor: pointer;
           transition: background-color 0.3s ease;
-        }
-
-        #submit-button {
-          background-color: #007bff;
-        }
-
-        #reset-button {
-          margin-top: 10px;
-          background-color: #e92539;
-        }
-
-        #submit-button:hover {
-          background-color: #005fc4;
-        }
-
-        #reset-button:hover {
-          background-color: #c82333;
-        }
-
-        #submit-button:disabled {
-          pointer-events: none;
-          opacity: 0.5;
-          cursor: not-allowed;
-          background-color: #ccc;
         }
 
         .option-container {
@@ -130,7 +111,7 @@ export class TaggingQuestion extends DDD {
           transition: background-color 0.3s ease;
         }
 
-        .tag-option:hover {
+        .tag-option:hover, .tag-option:focus {
           background-color: #e0e0e0;
         }
 
@@ -142,7 +123,53 @@ export class TaggingQuestion extends DDD {
           outline: 2px solid #f44336;
         }
 
-        
+        #submit-button {
+          background-color: #007bff;
+        }
+
+        #reset-button {
+          margin-top: 10px;
+          background-color: #e92539;
+        }
+
+        #submit-button:hover, #submit-button:focus {
+          background-color: #005fc4;
+        }
+
+        #reset-button:hover, #reset-button:focus {
+          background-color: #c82333;
+        }
+
+        #submit-button:disabled {
+          pointer-events: none;
+          opacity: 0.5;
+          cursor: not-allowed;
+          background-color: #ccc;
+        }
+
+        .feedback-container h2 {
+          margin-top: 20px;
+          font-size: 24px;
+          font-weight: bold;
+          text-align: center;
+        }
+
+        .feedback-container p {
+          text-align: center;
+          margin-top: 0px;
+        }
+
+        .feedback {
+          margin-top: 20px;
+        }
+
+        .feedback.correct {
+          color: #4caf50;
+        }
+
+        .feedback.incorrect {
+          color: #f44336;
+        }
       `
     ];
   }
@@ -150,33 +177,45 @@ export class TaggingQuestion extends DDD {
   render() {
     return html`
       <confetti-container id="confetti">
-        <div class="tag-container ${this.submitted ? "submitted" : ""}">
+        <div class="tag-container">
           <div class="image-container">
             <img class="image" src="${this.image}">
           </div>
           <div class="tag-question">
-            <p><span>${this.question}</span></p>
+            <p>${this.question}</p>
           </div>
           <div class="tag-option-container">
             <div class="user-choice-container" @drop="${this.handleDropInAnswer}" @dragover="${this.allowDrop}">
-              ${this.selectedTags.map(tag => html`
-                <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}">${tag}</div>
+              ${this.selectedTags.length === 0 ? html`
+                <p>*place tags here*</p>
+              ` : ''}
+              ${this.selectedTags.map(selectedTag => html`
+                <div class="tag-option ${this.submitted ? (this.isTagCorrect(selectedTag) ? 'correct' : 'incorrect') : ''}" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}" @click="${() => this.handleTagClick(selectedTag)}">${selectedTag}</div>
               `)}
             </div>
-            <div class="option-container" @dragover="${this.allowDrop}">
+            <div class="option-container" @drop="${this.handleDropInAnswer}" @dragover="${this.allowDrop}">
               ${this.tagOptions.map(tagOption => html`
-                <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" >${tagOption}</div>
+                <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}" @click="${() => this.handleTagClick(tagOption)}">${tagOption}</div>
               `)}
             </div>
           </div>
-          <div>
-            <button id="submit-button" ?disabled="${this.submitted}" @click="${this.submitAnswers}">Submit</button>
+          <div class="button-container">
+            <button id="submit-button" ?disabled="${this.submitted || this.selectedTags.length === 0}" @click="${this.submitAnswers}">Submit</button>
             <button id="reset-button" @click="${this.reset}">Reset</button>
           </div>
+          ${this.submitted ? html`
+          <div class="feedback-container">
+            <h2>Feedback</h2>
+            <p>${this.selectedTags.filter(tag => this.isTagCorrect(tag)).length} out of ${this.allTags.filter(tag => this.isTagCorrect(tag)).length} correct options selected</p>
+            ${this.selectedTags.map(selectedTag => html`
+              <div class="feedback ${this.isTagCorrect(selectedTag) ? 'correct' : 'incorrect'}"><strong>${selectedTag}:</strong> ${this.getFeedbackForTag(selectedTag)}</div>              
+            `)}
+          </div>
+        ` : ''}
         </div>
       </confetti-container>
     `;
-  }
+  }  
 
   loadTagsData() {
     fetch("./src/tags.json")
@@ -189,9 +228,19 @@ export class TaggingQuestion extends DDD {
       .then(tagsData => {
         const tagSet = tagsData[this.answerSet];
         if (tagSet) {
-          this.tagOptions = tagSet.tagOptions || [];
-          this.tagAnswers = tagSet.tagAnswers || [];
-          
+          const originalTagOptions = tagSet.tagOptions || [];
+          this.allTags = originalTagOptions.slice(); 
+          this.tagOptions = originalTagOptions.slice();
+          this.tagCorrect = [];
+          this.tagFeedback = [];
+  
+          tagSet.tagAnswers.forEach((tagAnswer, index) => {
+            const tagKey = Object.keys(tagAnswer)[0];
+            const { correct, feedback } = tagAnswer[tagKey];
+            this.tagCorrect.push(correct);
+            this.tagFeedback.push(feedback);
+          });
+  
           this.tagOptions = this.shuffleArray(this.tagOptions);
         } else {
           throw new Error(`tagSet '${this.answerSet}' not found`);
@@ -199,7 +248,8 @@ export class TaggingQuestion extends DDD {
       })
       .catch(error => {
         console.error("Error loading tags data: ", error);
-      });
+      }
+    );
   }
   
   shuffleArray(array) {
@@ -208,6 +258,23 @@ export class TaggingQuestion extends DDD {
       [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+  }
+
+  getFeedbackForTag(tag) {
+    const index = this.allTags.indexOf(tag);
+    if (index !== -1) {
+      const feedback = this.tagFeedback[index];
+      return html`${feedback}`;
+    }
+    return html``;
+  }
+
+  isTagCorrect(tag) {
+    const index = this.allTags.indexOf(tag);
+    if (index !== -1) {
+      return this.tagCorrect[index];
+    }
+    return false;
   }
 
   firstUpdated() {
@@ -229,7 +296,17 @@ export class TaggingQuestion extends DDD {
     const tagOption = e.target.textContent.trim();
     const sourceContainer = e.target.closest(".user-choice-container");
     if (sourceContainer) {
+      this.handleTagMove(tagOption, "user-choice");
+    } else {
+      this.handleTagMove(tagOption, "option");
+    }
+  }
+
+  handleTagMove(tagOption, source) {
+    if (source === "user-choice") {
       this.removeTag(tagOption);
+    } else {
+      this.addTag(tagOption);
     }
   }
 
@@ -240,69 +317,54 @@ export class TaggingQuestion extends DDD {
   handleDrop(isUserChoice, e) {
     e.preventDefault();
     const tagOption = e.dataTransfer.getData("text/plain");
-    if (isUserChoice) {
-      this.addTag(tagOption);
-    } else {
-      if (!this.selectedTags.includes(tagOption)) {
-        if (!this.tagOptions.includes(tagOption)) {
-          this.tagOptions.push(tagOption);
-        }
-      }
+    const isInUserChoice = this.selectedTags.includes(tagOption);
+    const isInOptionContainer = this.tagOptions.includes(tagOption);
+  
+    if (isUserChoice && isInOptionContainer) {
+      this.handleTagMove(tagOption, "user-choice");
+    } else if (!isUserChoice && isInUserChoice) {
+      this.handleTagMove(tagOption, "option");
     }
   }
-  
-  applyFeedback() {
-    if (this.submitted) {
-      fetch("./src/tags.json")
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Failed to fetch tags data");
-          }
-          return response.json();
-        })
-        .then(tagsData => {
-          const tagSet = tagsData[this.answerSet];
-          if (tagSet) {
-            const tagAnswers = tagSet.tagAnswers || [];
-            const selectedTags = this.selectedTags;
-            const tagElements = Array.from(this.shadowRoot.querySelectorAll('.tag-option'));
-            tagElements.forEach(tagElement => {
-              const optionText = tagElement.textContent.trim();
-              const tagAnswer = tagAnswers.find(answer => answer.hasOwnProperty(optionText));
-              if (tagAnswer) {
-                const correct = tagAnswer[optionText].correct;
-                tagElement.classList.toggle('correct', correct && selectedTags.includes(optionText));
-                tagElement.classList.toggle('incorrect', !correct && selectedTags.includes(optionText));
-              }
-            });
-          } else {
-            throw new Error(`tagSet '${this.answerSet}' not found`);
-          }
-        })
-        .catch(error => {
-          console.error("Error applying feedback: ", error);
-        });
+
+  handleTagClick(tagOption) {
+    if (this.selectedTags.includes(tagOption)) {
+      this.handleTagMove(tagOption, "user-choice");
+    } else if (this.tagOptions.includes(tagOption)) {
+      this.handleTagMove(tagOption, "option");
     }
   }
-  
+
   addTag(tagOption) {
     if (!this.submitted && !this.selectedTags.includes(tagOption)) {
       this.selectedTags = [...this.selectedTags, tagOption];
-      this.tagOptions = this.tagOptions.filter(tag => tag !== tagOption);
+      this.tagOptions = this.tagOptions.filter(selectedTags => selectedTags !== tagOption);
     }
   }
 
   removeTag(tagOption) {
     if (!this.submitted) {
-      this.selectedTags = this.selectedTags.filter(tag => tag !== tagOption);
+      this.selectedTags = this.selectedTags.filter(selectedTags => selectedTags !== tagOption);
       this.tagOptions.push(tagOption);
     }
   }
 
   submitAnswers() {
     this.submitted = true;
-    this.applyFeedback();
+    this.checkAnswers();
     this.makeItRain();
+  }
+
+  checkAnswers() {
+    this.selectedTags.forEach(tag => {
+      const index = this.allTags.indexOf(tag);
+      console.log(`Tag: ${tag}, Index in allTags: ${index}`);
+      if (index !== -1) {
+        const correct = this.tagCorrect[index];
+        const feedback = this.tagFeedback[index];
+        console.log(`Tag: ${tag}, Correct: ${correct}, Feedback: ${feedback}`);
+      }
+    });
   }
 
   reset() {
@@ -311,15 +373,19 @@ export class TaggingQuestion extends DDD {
     this.selectedTags = [];
     this.shuffleArray(this.tagOptions); 
   }
-  
 
   makeItRain() {
-    import('@lrnwebcomponents/multiple-choice/lib/confetti-container.js').then((module) => {
-      setTimeout(() => {
-        this.shadowRoot.querySelector("#confetti").setAttribute("popped", "");
-      }, 0);
-    });
+    const allCorrect = this.selectedTags.every(tag => this.isTagCorrect(tag));
+  
+    if (allCorrect) {
+      import('@lrnwebcomponents/multiple-choice/lib/confetti-container.js').then((module) => {
+        setTimeout(() => {
+          this.shadowRoot.querySelector("#confetti").setAttribute("popped", "");
+        }, 0);
+      });
+    }
   }
+  
 
   static get properties() {
     return {
@@ -328,6 +394,9 @@ export class TaggingQuestion extends DDD {
       question: { type: String, reflect: true },
       answerSet: { type: String, reflect: true },
       tagOptions: { type: Array, attribute: "tag-options" },
+      allTags: { type: Array, attribute: "all-tags" },
+      tagCorrect: { type: Array, attribute: "tag-correct" },
+      tagFeedback: { type: Array, attribute: "tag-feedback" },
       selectedTags: { type: Array, attribute: "selected-tags" },
       submitted: { type: Boolean, reflect: true }
     };
