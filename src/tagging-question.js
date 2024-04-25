@@ -190,12 +190,12 @@ export class TaggingQuestion extends DDD {
                 <p>*place tags here*</p>
               ` : ''}
               ${this.selectedTags.map(selectedTag => html`
-                <div class="tag-option ${this.submitted ? (this.isTagCorrect(selectedTag) ? 'correct' : 'incorrect') : ''}" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}" @click="${() => this.handleTagClick(selectedTag)}">${selectedTag}</div>
+                <div class="tag-option ${this.submitted ? (this.isTagCorrect(selectedTag) ? 'correct' : 'incorrect') : ''}" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}" @click="${() => this.handleTagClick(selectedTag)}" @keydown="${(event) => this.handleKeyDown(event, selectedTag)}" tabindex=0>${selectedTag}</div>
               `)}
             </div>
             <div class="option-container" @drop="${this.handleDropInAnswer}" @dragover="${this.allowDrop}">
               ${this.tagOptions.map(tagOption => html`
-                <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}" @click="${() => this.handleTagClick(tagOption)}">${tagOption}</div>
+                <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}" @click="${() => this.handleTagClick(tagOption)}" @keydown="${(event) => this.handleKeyDown(event, tagOption)}" tabindex=0 >${tagOption}</div>
               `)}
             </div>
           </div>
@@ -332,6 +332,13 @@ export class TaggingQuestion extends DDD {
       this.handleTagMove(tagOption, "user-choice");
     } else if (this.tagOptions.includes(tagOption)) {
       this.handleTagMove(tagOption, "option");
+    }
+  }
+
+  handleKeyDown(event, tagOption) {
+    console.log('Key pressed:', event.key);
+    if (event.key === 'Enter') {
+      this.handleTagClick(tagOption);
     }
   }
 
