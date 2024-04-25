@@ -191,12 +191,12 @@ export class TaggingQuestion extends DDD {
                 <p>*place tags here*</p>
               ` : ''}
               ${this.selectedTags.map(selectedTag => html`
-                <div class="tag-option ${this.submitted ? (this.isTagCorrect(selectedTag) ? 'correct' : 'incorrect') : ''}" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}" @click="${() => this.handleTagClick(selectedTag)}" @keydown="${(event) => this.handleKeyDown(event, selectedTag)}" tabindex=0>${selectedTag}</div>
+                <div class="tag-option ${this.submitted ? (this.isTagCorrect(selectedTag) ? 'correct' : 'incorrect') : ''}" draggable="true" @dragstart="${this.handleDrag}" @dragend="${this.handleDrag}" @click="${() => this.handleTagClick(selectedTag)}" @keydown="${(event) => this.handleKeyDown(event, selectedTag)}" tabindex=0>${selectedTag}</div>
               `)}
             </div>
             <div class="option-container" @drop="${this.handleDrop}" @dragover="${this.allowDrop}">
               ${this.tagOptions.map(tagOption => html`
-                <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}" @click="${() => this.handleTagClick(tagOption)}" @keydown="${(event) => this.handleKeyDown(event, tagOption)}" tabindex=0 >${tagOption}</div>
+                <div class="tag-option" draggable="true" @dragstart="${this.handleDrag}" @dragend="${this.handleDrag}" @click="${() => this.handleTagClick(tagOption)}" @keydown="${(event) => this.handleKeyDown(event, tagOption)}" tabindex=0 >${tagOption}</div>
               `)}
             </div>
           </div>
@@ -278,14 +278,9 @@ export class TaggingQuestion extends DDD {
     return false;
   }
 
-  handleDragStart(e) {
+  handleDrag(e) {
     const tagOption = e.target.textContent.trim();
     e.dataTransfer.setData("text/plain", tagOption);
-  }
-  
-  handleDragEnd(e) {
-    const tagOption = e.target.textContent.trim();
-    e.dataTransfer.getData("text/plain", tagOption);
   }
 
   allowDrop(e) {
