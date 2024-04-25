@@ -87,7 +87,9 @@
       "adorable",
       "small",
       "large",
-      "well-mannered"
+      "well-mannered",
+      "ugly",
+      "stinky"
     ],
     "tagAnswers": [
       {
@@ -136,6 +138,18 @@
         "well-mannered": {
           "correct": true,
           "feedback": "He is sitting like an established gentleman."
+        }
+      },
+      {
+        "ugly": {
+          "correct": false,
+          "feedback": "HE'S NOT UGLY, YOU'RE UGLY."
+        }
+      },
+      {
+        "stinky": {
+          "correct": false,
+          "feedback": "He gets a bath way too often to be stinky."
         }
       }
     ]

@@ -160,6 +160,7 @@ export class TaggingQuestion extends DDD {
         }
 
         .feedback {
+          text-align: left;
           margin-top: 20px;
         }
 
@@ -185,7 +186,7 @@ export class TaggingQuestion extends DDD {
             <p>${this.question}</p>
           </div>
           <div class="tag-option-container">
-            <div class="user-choice-container" @drop="${this.handleDropInAnswer}" @dragover="${this.allowDrop}">
+            <div class="user-choice-container" @drop="${this.handleDrop}" @dragover="${this.allowDrop}">
               ${this.selectedTags.length === 0 ? html`
                 <p>*place tags here*</p>
               ` : ''}
@@ -193,7 +194,7 @@ export class TaggingQuestion extends DDD {
                 <div class="tag-option ${this.submitted ? (this.isTagCorrect(selectedTag) ? 'correct' : 'incorrect') : ''}" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}" @click="${() => this.handleTagClick(selectedTag)}" @keydown="${(event) => this.handleKeyDown(event, selectedTag)}" tabindex=0>${selectedTag}</div>
               `)}
             </div>
-            <div class="option-container" @drop="${this.handleDropInAnswer}" @dragover="${this.allowDrop}">
+            <div class="option-container" @drop="${this.handleDrop}" @dragover="${this.allowDrop}">
               ${this.tagOptions.map(tagOption => html`
                 <div class="tag-option" draggable="true" @dragstart="${this.handleDragStart}" @dragend="${this.handleDragEnd}" @click="${() => this.handleTagClick(tagOption)}" @keydown="${(event) => this.handleKeyDown(event, tagOption)}" tabindex=0 >${tagOption}</div>
               `)}
@@ -281,17 +282,34 @@ export class TaggingQuestion extends DDD {
     const tagOption = e.target.textContent.trim();
     e.dataTransfer.setData("text/plain", tagOption);
   }
-
+  
   handleDragEnd(e) {
     const tagOption = e.target.textContent.trim();
-    const sourceContainer = e.target.closest(".user-choice-container");
-    if (sourceContainer) {
-      this.handleTagMove(tagOption, "user-choice");
-    } else {
-      this.handleTagMove(tagOption, "option");
-    }
+    e.dataTransfer.getData("text/plain", tagOption);
   }
 
+  allowDrop(e) {
+    e.preventDefault();
+  }
+
+  handleDrop(e) {
+    e.preventDefault();
+    const tagOption = e.dataTransfer.getData("text/plain");
+    const isInOptionContainer = this.tagOptions.includes(tagOption);
+    const sourceContainer = isInOptionContainer ? "option" : "user-choice";
+    const destinationContainer = e.target.classList.contains("option-container") ? "option" : "user-choice";
+
+    if (sourceContainer === destinationContainer) {
+        return;
+    }
+
+    if (isInOptionContainer) {
+        this.handleTagMove(tagOption, "option");
+    } else {
+        this.handleTagMove(tagOption, "user-choice");
+    }
+  }
+  
   handleTagMove(tagOption, source) {
     if (source === "user-choice") {
       this.removeTag(tagOption);
@@ -300,35 +318,17 @@ export class TaggingQuestion extends DDD {
     }
   }
 
-  allowDrop(e) {
-    e.preventDefault();
-  }
-
-  handleDrop(isUserChoice, e) {
-    e.preventDefault();
-    const tagOption = e.dataTransfer.getData("text/plain");
-    const isInUserChoice = this.selectedTags.includes(tagOption);
-    const isInOptionContainer = this.tagOptions.includes(tagOption);
-  
-    if (isUserChoice && isInOptionContainer) {
-      this.handleTagMove(tagOption, "user-choice");
-    } else if (!isUserChoice && isInUserChoice) {
-      this.handleTagMove(tagOption, "option");
+  handleKeyDown(event, tagOption) {
+    if (event.key === 'Enter') {
+      this.handleTagClick(tagOption);
     }
   }
-
+  
   handleTagClick(tagOption) {
     if (this.selectedTags.includes(tagOption)) {
       this.handleTagMove(tagOption, "user-choice");
     } else if (this.tagOptions.includes(tagOption)) {
       this.handleTagMove(tagOption, "option");
-    }
-  }
-
-  handleKeyDown(event, tagOption) {
-    console.log('Key pressed:', event.key);
-    if (event.key === 'Enter') {
-      this.handleTagClick(tagOption);
     }
   }
 
@@ -381,7 +381,6 @@ export class TaggingQuestion extends DDD {
     }
   }
   
-
   static get properties() {
     return {
       ...super.properties,
