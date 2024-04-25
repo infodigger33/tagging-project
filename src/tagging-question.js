@@ -277,16 +277,6 @@ export class TaggingQuestion extends DDD {
     return false;
   }
 
-  firstUpdated() {
-    super.firstUpdated();
-    this.answerContainer = this.shadowRoot.querySelector(".user-choice-container");
-    this.optionContainer = this.shadowRoot.querySelector(".option-container");
-    this.answerContainer.addEventListener("dragover", this.allowDrop.bind(this));
-    this.optionContainer.addEventListener("dragover", this.allowDrop.bind(this));
-    this.answerContainer.addEventListener("drop", this.handleDrop.bind(this, true));
-    this.optionContainer.addEventListener("drop", this.handleDrop.bind(this, false));
-  }
-
   handleDragStart(e) {
     const tagOption = e.target.textContent.trim();
     e.dataTransfer.setData("text/plain", tagOption);
@@ -365,11 +355,9 @@ export class TaggingQuestion extends DDD {
   checkAnswers() {
     this.selectedTags.forEach(tag => {
       const index = this.allTags.indexOf(tag);
-      console.log(`Tag: ${tag}, Index in allTags: ${index}`);
       if (index !== -1) {
         const correct = this.tagCorrect[index];
         const feedback = this.tagFeedback[index];
-        console.log(`Tag: ${tag}, Correct: ${correct}, Feedback: ${feedback}`);
       }
     });
   }
