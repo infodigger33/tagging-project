@@ -17,20 +17,31 @@
         font-family: sans-serif;
         background-color: #ededed;
       }
-
+  
       h1 {
         text-align: center;
         margin-top: 20px;
       }
-
+  
       .container {
         display: flex;
         justify-content: center;
         margin-top: 20px;
       }
-
-      .tagging-question {
+  
+      .ramble-tagging-pair {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         margin: 0 20px;
+      }
+  
+      .ramble-text {
+        text-align: center;
+      }
+  
+      .tagging-question {
+        margin-top: 20px;
       }
     </style>
   </head>
@@ -39,19 +50,28 @@
     <h1>Tag!</h1>
 
     <div class="container">
-      <tagging-question
-        class="tagging-question"
-        question="How would you describe... this..?"
-        image="haxLogo.png"
-        answerSet="haxLogo"
-      ></tagging-question>
-
-      <tagging-question
-        class="tagging-question"
-        question="How would you describe Buckeye?"
-        image="buckeye.jpeg"
-        answerSet="buckeye"
-      ></tagging-question>
+      <div class="ramble-tagging-pair">
+        <div class="ramble-text">
+          <p>Let's talk about the Hax logo. The logo represents innovation, creativity, and a forward-thinking mindset. It embodies the essence of the Hax brand, which is all about pushing boundaries and breaking new ground in the world of technology. The logo features a bold and modern design, with sleek lines and vibrant colors that capture attention. It symbolizes progress and evolution, reflecting Hax's commitment to staying at the forefront of industry trends.</p>
+        </div>
+        <tagging-question
+          class="tagging-question"
+          question="How would you describe... this..?"
+          image="haxLogo.png"
+          answerSet="haxLogo"
+        ></tagging-question>
+      </div>
+  
+      <div class="ramble-tagging-pair">
+        <div class="ramble-text">
+          <p>Meet Buckeye, the adorable mini Goldendoodle! Buckeye is a delightful canine companion with a coat that's brown with white markings on his head, nose, chest, and paws. His curly hair adds to his charm, giving him a playful and endearing appearance. Buckeye is known for his boundless energy and cheerful demeanor. He brightens the room with his wagging tail and infectious enthusiasm for life. Whether he's chasing after a ball or cuddling up for a nap, Buckeye brings joy to everyone he meets.</p>
+        <tagging-question
+          class="tagging-question"
+          question="How would you describe Buckeye?"
+          image="buckeye.jpeg"
+          answerSet="buckeye"
+        ></tagging-question>
+      </div>
     </div>
 
     <script type="module" src="./src/tagging-question.js"></script>

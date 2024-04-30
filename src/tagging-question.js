@@ -29,67 +29,63 @@ export class TaggingQuestion extends DDD {
           display: flex;
           flex-direction: column;
           align-items: center;
-          border: 2px solid #ccc;
-          border-radius: 8px;
-          padding: 20px;
-          height: auto;
-          max-width: 600px;
-          margin: auto;
           overflow: hidden; 
+          margin: var(--tagging-question-tag-container-margin, auto);
+          padding: var(--ddd-spacing-5);
+          height: var(--tagging-question-tag-container-height, auto);
+          max-width: var(--tagging-question-tag-container-max-width, 600px);
+          border: 2px solid var(--simple-colors-default-theme-grey-3);
+          border-radius: var(--ddd-radius-sm);
+          box-shadow: var(--tagging-question-tag-container-box-shadow, 0px 0px 10px rgba(0, 0, 0, 0.1));
           transition: height 0.3s ease;
         }
 
         .image-container {
-          margin: 0px;
+          margin: var(--ddd-spacing-0);
         }
 
         .image {
-          max-width: 100%;
-          height: auto;
-          border-radius: 8px;
+          height: var(--tagging-question-image-height, auto);
+          max-width: var(--tagging-question-image-max-width, 100%);
+          border-radius: var(--ddd-radius-sm);
         }
 
         .tag-question {
-          font-size: 24px;
-          font-weight: bold;
           text-align: center;
+          font-weight: bold;
+          font-size: var(--ddd-spacing-6);
         }
 
         .tag-option-container {
-          width: 100%;
-          background-color: #f0f0f0;
-          padding: 20px;
-          border: 2px solid #ccc;
-          border-radius: 8px;
+          padding: var(--ddd-spacing-5);
+          width: var(--tagging-question-tag-option-container-width, 100%);
+          border: 2px solid var(--simple-colors-default-theme-grey-3);
+          border-radius: var(--ddd-radius-sm);
           box-sizing: border-box;
+          background-color: var(--simple-colors-default-theme-grey-2);
         }
 
         .user-choice-container {
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
-          gap: 10px;
           overflow-y: auto;
-          background-color: #f0f0f0;
-          padding: 10px;
-          border: 2px solid #ccc;
-          border-radius: 8px;
+          gap: var(--ddd-spacing-2);
+          min-height: var(--ddd-spacing-18);
+          margin-bottom: var(--ddd-spacing-5);
+          padding: var(--ddd-spacing-3);
+          border: 2px solid var(--simple-colors-default-theme-grey-3);
+          border-radius: var(--ddd-radius-sm);
           box-sizing: border-box;
-          margin-bottom: 20px;
-        }
-
-        .user-choice-container p {
-          font-size: 18px;
-          margin: 11px;
-          color: #939393
+          background-color: var(--simple-colors-default-theme-grey-2);
         }
 
         #submit-button, #reset-button {
-          margin-top: 20px;
-          padding: 15px 20px;
-          color: #fff;
+          margin-top: var(--ddd-spacing-5);
+          padding: var(--ddd-spacing-4) var(--ddd-spacing-5);
+          color: var(--ddd-theme-default-white);
           border: none;
-          border-radius: 8px;
+          border-radius: var(--ddd-radius-sm);
           cursor: pointer;
           transition: background-color 0.3s ease;
         }
@@ -98,78 +94,81 @@ export class TaggingQuestion extends DDD {
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
-          gap: 10px;
+          gap: var(--ddd-spacing-2);
+          min-height: var(--ddd-spacing-12);
         }
 
         .tag-option {
-          padding: 8px 12px;
-          border: 2px solid #ccc;
-          border-radius: 8px;
-          background-color: #f0f0f0;
+          max-height: var(--ddd-spacing-6);
+          padding: var(--ddd-spacing-2) var(--ddd-spacing-3);
+          border: 2px solid var(--simple-colors-default-theme-grey-3);
+          border-radius: var(--ddd-radius-sm);
+          background-color: var(--simple-colors-default-theme-grey-2);
           cursor: pointer;
           user-select: none;
           transition: background-color 0.3s ease;
         }
 
         .tag-option:hover, .tag-option:focus {
-          background-color: #e0e0e0;
+          background-color: var(--simple-colors-default-theme-grey-3);
         }
 
         .tag-option.correct {
-          outline: 2px solid #4caf50;
+          outline: 2px solid var(--simple-colors-default-theme-green-7);
         }
 
         .tag-option.incorrect {
-          outline: 2px solid #f44336;
+          outline: 2px solid var(--simple-colors-default-theme-red-7);;
         }
 
         #submit-button {
-          background-color: #007bff;
+          background-color: var(--simple-colors-default-theme-light-blue-7);
+          user-select: none;
         }
 
         #reset-button {
-          margin-top: 10px;
-          background-color: #e92539;
+          background-color: var(--simple-colors-default-theme-red-7);
+          user-select: none;
         }
 
         #submit-button:hover, #submit-button:focus {
-          background-color: #005fc4;
+          background-color: var(--simple-colors-default-theme-light-blue-8);
         }
 
         #reset-button:hover, #reset-button:focus {
-          background-color: #c82333;
+          background-color: var(--simple-colors-default-theme-red-8);
         }
 
         #submit-button:disabled {
-          pointer-events: none;
+          background-color: var(--ddd-theme-default-limestoneGray);
           opacity: 0.5;
           cursor: not-allowed;
-          background-color: #ccc;
+          pointer-events: none;
         }
 
         .feedback-container h2 {
-          margin-top: 20px;
-          font-size: 24px;
+          margin-top: var(--ddd-spacing-5);
+          font-size: var(--ddd-spacing-6);
           font-weight: bold;
           text-align: center;
         }
 
         .feedback-container p {
           text-align: center;
-          margin-top: 0px;
+          margin-top: var(--ddd-spacing-0);
         }
 
         .feedback {
           text-align: left;
-          margin-top: 20px;
+          margin-top: var(--ddd-spacing-5);
         }
 
         .feedback.correct {
-          color: #4caf50;
+          color: var(--simple-colors-default-theme-green-7);
         }
 
         .feedback.incorrect {
-          color: #f44336;
+          color: var(--simple-colors-default-theme-red-7);
         }
       `
     ];
@@ -187,9 +186,6 @@ export class TaggingQuestion extends DDD {
           </div>
           <div class="tag-option-container">
             <div class="user-choice-container" @drop="${this.handleDrop}" @dragover="${this.allowDrop}">
-              ${this.selectedTags.length === 0 ? html`
-                <p>*place tags here*</p>
-              ` : ''}
               ${this.selectedTags.map(selectedTag => html`
                 <div class="tag-option ${this.submitted ? (this.isTagCorrect(selectedTag) ? 'correct' : 'incorrect') : ''}" draggable="true" @dragstart="${this.handleDrag}" @dragend="${this.handleDrag}" @click="${() => this.handleTagClick(selectedTag)}" @keydown="${(event) => this.handleKeyDown(event, selectedTag)}" tabindex=0>${selectedTag}</div>
               `)}
@@ -291,20 +287,21 @@ export class TaggingQuestion extends DDD {
     e.preventDefault();
     const tagOption = e.dataTransfer.getData("text/plain");
     const isInOptionContainer = this.tagOptions.includes(tagOption);
-    const sourceContainer = isInOptionContainer ? "option" : "user-choice";
-    const destinationContainer = e.target.classList.contains("option-container") ? "option" : "user-choice";
+    const isInUserChoiceContainer = this.selectedTags.includes(tagOption);
+    const sourceContainer = e.target.classList.contains("option-container") ? "option" : "user-choice";
+    const destinationContainer = e.target.classList.contains("user-choice-container") ? "option" : "user-choice";
 
     if (sourceContainer === destinationContainer) {
         return;
     }
 
-    if (isInOptionContainer) {
+    if (isInOptionContainer && !isInUserChoiceContainer) {
         this.handleTagMove(tagOption, "option");
-    } else {
+    } else if (!isInOptionContainer && isInUserChoiceContainer) {
         this.handleTagMove(tagOption, "user-choice");
     }
   }
-  
+
   handleTagMove(tagOption, source) {
     if (source === "user-choice") {
       this.removeTag(tagOption);
