@@ -237,6 +237,11 @@ export class TaggingQuestion extends DDD {
             this.tagCorrect.push(correct);
             this.tagFeedback.push(feedback);
           });
+
+          console.log("Tag correct array:", this.tagCorrect);
+          console.log("Tag feedback array:", this.tagFeedback);
+          
+          console.log("Tags data processed successfully.");
   
           this.tagOptions = this.shuffleArray(this.tagOptions);
         } else {
@@ -288,12 +293,6 @@ export class TaggingQuestion extends DDD {
     const tagOption = e.dataTransfer.getData("text/plain");
     const isInOptionContainer = this.tagOptions.includes(tagOption);
     const isInUserChoiceContainer = this.selectedTags.includes(tagOption);
-    const sourceContainer = e.target.classList.contains("option-container") ? "option" : "user-choice";
-    const destinationContainer = e.target.classList.contains("user-choice-container") ? "option" : "user-choice";
-
-    if (sourceContainer === destinationContainer) {
-        return;
-    }
 
     if (isInOptionContainer && !isInUserChoiceContainer) {
         this.handleTagMove(tagOption, "option");
